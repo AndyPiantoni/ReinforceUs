@@ -71,11 +71,11 @@ TAU = 0.005 # Instead of doing a hard update from the policy network to the targ
 LR = 1e-4
 
 
-env = gym.make("Pendulum-v1", render_mode='human')
+env = gym.make("Pendulum-v1")
 # env = gym.make("Pendulum-v1", render_mode='human')
 # Discretized Action Space
 action_range = (env.action_space.low[0], env.action_space.high[0])
-n_actions = 10
+n_actions = 100
 actions = np.linspace(action_range[0], action_range[1], n_actions)
 
 # Get the number of state observations
@@ -203,9 +203,11 @@ def optimize_model():
 if torch.cuda.is_available():
     num_episodes = 600
 else:
-    num_episodes = 20
+    num_episodes = 102
 
 for i_episode in range(num_episodes):
+    if i_episode > 100:
+        env = gym.make("Pendulum-v1", render_mode='human')
     # Initialize the environment and get its state
     state, info = env.reset()
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
@@ -241,10 +243,11 @@ for i_episode in range(num_episodes):
 
         if done:
             episode_durations.append(t + 1)
-            plot_durations()
+            # plot_durations()
+            print(f'Episode {i_episode} finished after {t+1} timesteps')
             break
 
 print('Complete')
-plot_durations(show_result=True)
-plt.ioff()
-plt.show()
+# plot_durations(show_result=True)
+# plt.ioff()
+# plt.show()
